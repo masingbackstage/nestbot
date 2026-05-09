@@ -1,6 +1,6 @@
 # Nestbot
 
-A Telegram bot with long-term user memory, powered by PostgreSQL + `pgvector` and locally hosted models served through Ollama.
+A Telegram bot with long-term user memory, powered by PostgreSQL + `pgvector`, LLMs served through Ollama, and local image OCR via EasyOCR.
 
 The bot:
 
@@ -27,12 +27,13 @@ For each conversation, the bot:
 - PostgreSQL with `pgvector`
 - LangChain
 - Ollama
+- EasyOCR
 
 ## Features
 
 - User profile memory extracted from chat messages.
 - Document memory created from PDFs.
-- OCR for images using a vision model in Ollama.
+- OCR for images using EasyOCR (`pl` + `en`, CPU by default).
 - Access restriction for selected Telegram accounts through `ALLOWED_TELEGRAM_IDS`.
 - Simple developer scripts for checking the database and memory flow.
 
@@ -71,7 +72,6 @@ At minimum, configure:
 - `LLM_MODEL`
 - `EMBEDDING_MODEL`
 - `LLM_EXTRACTOR_MODEL`
-- `LLM_VISION_MODEL`
 
 Example local configuration:
 
@@ -94,7 +94,6 @@ LLM_MODEL=qwen3:8b
 EMBEDDING_MODEL=nomic-embed-text
 LLM_BASE_URL=http://localhost:11434
 LLM_EXTRACTOR_MODEL=llama3.2:1b
-LLM_VISION_MODEL=llava
 
 TELEGRAM_BOT_TOKEN=your_token_here
 ALLOWED_TELEGRAM_IDS=123456789
@@ -124,7 +123,6 @@ For example:
 ollama pull qwen3:8b
 ollama pull nomic-embed-text
 ollama pull llama3.2:1b
-ollama pull llava
 ```
 
 The model names must match the values in your `.env` file.
@@ -146,7 +144,7 @@ The bot runs in polling mode.
 ## File Handling
 
 - Sending a PDF splits the document into chunks and stores them as `document` memory.
-- Sending an image runs OCR through an Ollama vision model and stores the extracted text as document memory.
+- Sending an image runs local OCR through EasyOCR and stores the extracted text as document memory.
 
 ## Helpful Scripts
 
@@ -190,6 +188,7 @@ uv run python scripts/test_memory_retrieval.py
 ## Limitations and Notes
 
 - The project assumes Ollama is running locally.
+- Image OCR is handled locally by EasyOCR instead of an Ollama vision model.
 - The bot is instructed to answer only from stored memory context; if the information is missing, it should say so directly.
 - The `/forget` command is not yet connected to actual memory deletion in Telegram.
 - Document memory stores text chunks rather than full document structure.

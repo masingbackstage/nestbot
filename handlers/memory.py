@@ -18,12 +18,14 @@ async def handle_memories(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text("Nie mam jeszcze żadnych wspomnień o Tobie.")
         return
 
-    lines = ["*Moje wspomnienia o Tobie:*\n"]
-    for i, m in enumerate(memories[:20], 1):
-        content = escape_markdown(m.content, version=2)
-        lines.append(f"{i}\\. {content}")
+    lines = ["Moje wspomnienia o Tobie:\n"]
+    for i, m in enumerate(memories, 1):
+        lines.append(f"{i}. [{m.memory_type}] {m.content}")
 
-    await update.message.reply_text("\n".join(lines), parse_mode="MarkdownV2")
+    text = "\n".join(lines)
+
+    for i in range(0, len(text), 4000):
+        await update.message.reply_text(text[i:i+4000])
 
 
 @require_authorized
